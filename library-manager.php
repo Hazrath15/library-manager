@@ -22,3 +22,6 @@ define( 'LM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 require_once LM_PLUGIN_DIR . 'plugin.php';
 Library_Manager_Plugin::lm_init();
+
+register_activation_hook( __FILE__, array( 'Library_Manager_Database', 'create_table' ) );
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );

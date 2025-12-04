@@ -9,6 +9,9 @@ if( !class_exists( 'Library_Manager_Plugin' ) ) {
     class Library_Manager_Plugin {
         public static function lm_init() {
             require_once LM_PLUGIN_DIR . 'includes/class-admin-menu.php';
+            require_once LM_PLUGIN_DIR . 'includes/class-library-db.php';
+            require_once LM_PLUGIN_DIR . 'includes/class-library-rest.php';
+
             add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lm_enqueue_scripts' ) );
         }
         
@@ -32,6 +35,11 @@ if( !class_exists( 'Library_Manager_Plugin' ) ) {
                 $asset_file['version'],
                 true 
             );
+
+            wp_localize_script( 'library-manager-script', 'lmSettings', [
+                'root'  => esc_url_raw( rest_url( 'library/v1/' ) ),
+                'nonce' => wp_create_nonce( 'wp_rest' ),
+            ] );
 
             // Enqueue the CSS file
             wp_enqueue_style(
