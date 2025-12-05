@@ -1,6 +1,6 @@
 <?php
 /**
- * Library Manager REST API Class
+ * REST API Class
  *
  * @package Library_Manager
  */
@@ -14,9 +14,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             add_action( 'rest_api_init', [ $this, 'register_routes' ] );
         }
 
-        /**
-         * Register all REST API routes
-         */
+
         public function register_routes() {
 
             register_rest_route( 'library/v1', '/books', [
@@ -51,12 +49,10 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             ] );
         }
 
-        /**
-         * Permission + Nonce Verification for POST/PUT/DELETE
-         */
+
         public function verify_permissions( $request ) {
 
-            // Nonce Check
+
             $nonce = $request->get_header( 'X-WP-Nonce' );
 
             if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
@@ -67,7 +63,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
                 );
             }
 
-            // Capability Check
+
             if ( ! current_user_can( 'edit_posts' ) ) {
                 return new WP_Error(
                     'forbidden',
@@ -79,13 +75,17 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             return true;
         }
 
-        /**
-         * GET /books — List with optional filters
-         */
+
         public function get_books( WP_REST_Request $request ) {
             global $wpdb;
 
             $table = $wpdb->prefix . 'library_books';
+
+
+            $page     = max( 1, absint( $request->get_param('page') ) );
+            $per_page = max( 1, absint( $request->get_param('per_page') ) );
+            $offset   = ( $page - 1 ) * $per_page;
+
 
             $status = sanitize_text_field( $request->get_param( 'status' ) );
             $author = sanitize_text_field( $request->get_param( 'author' ) );
@@ -109,20 +109,32 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
                 $params[] = $year;
             }
 
-            $sql = "SELECT * FROM $table $where ORDER BY id DESC";
 
-            if ( $params ) {
-                $sql = $wpdb->prepare( $sql, $params );
-            }
+            $sql = "SELECT * FROM $table $where ORDER BY id DESC LIMIT %d OFFSET %d";
 
-            $results = $wpdb->get_results( $sql );
+            $main_params = array_merge( $params, [ $per_page, $offset ] );
 
-            return rest_ensure_response( $results );
+            $results = $wpdb->get_results(
+                $wpdb->prepare( $sql, $main_params )
+            );
+
+
+            $count_sql = "SELECT COUNT(*) FROM $table $where";
+
+            $total_items = $params
+                ? $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) )
+                : $wpdb->get_var( $count_sql );
+
+
+            $response = rest_ensure_response( $results );
+
+            $response->header( 'X-WP-Total', (int) $total_items );
+            $response->header( 'X-WP-TotalPages', ceil( $total_items / $per_page ) );
+
+            return $response;
         }
 
-        /**
-         * GET /books/{id}
-         */
+
         public function get_book( WP_REST_Request $request ) {
             global $wpdb;
 
@@ -140,16 +152,14 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             return rest_ensure_response( $book );
         }
 
-        /**
-         * POST /books
-         */
+
         public function create_book( WP_REST_Request $request ) {
             global $wpdb;
             $table = $wpdb->prefix . 'library_books';
 
             $data = $this->sanitize_book_data( $request );
 
-            // Validation
+
             $validation = $this->validate_book_data( $data );
             if ( is_wp_error( $validation ) ) {
                 return $validation;
@@ -170,9 +180,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             return new WP_REST_Response( $data, 201 );
         }
 
-        /**
-         * PUT /books/{id}
-         */
+
         public function update_book( WP_REST_Request $request ) {
             global $wpdb;
             $table = $wpdb->prefix . 'library_books';
@@ -209,9 +217,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             return rest_ensure_response( array_merge( [ 'id' => $id ], $data ) );
         }
 
-        /**
-         * DELETE /books/{id}
-         */
+
         public function delete_book( WP_REST_Request $request ) {
             global $wpdb;
             $table = $wpdb->prefix . 'library_books';
@@ -234,9 +240,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             );
         }
 
-        /**
-         * Sanitize data helper
-         */
+
         private function sanitize_book_data( $request ) {
             return [
                 'title'            => sanitize_text_field( $request['title'] ),
@@ -247,9 +251,7 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             ];
         }
 
-        /**
-         * Validate book data
-         */
+
         private function validate_book_data( $data ) {
 
             if ( empty( $data['title'] ) ) {
