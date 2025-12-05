@@ -1,6 +1,8 @@
 <?php
 /**
  * Uninstall script for Library Manager Plugin.
+ *
+ * @package Library_Manager
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -9,9 +11,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-// Table name
-$table = $wpdb->prefix . 'library_books';
+$library_manager_table = $wpdb->prefix . 'library_books';
 
-$wpdb->query( "DROP TABLE IF EXISTS {$table}" );
+$wpdb->query( "DROP TABLE IF EXISTS " . esc_sql( $library_manager_table ) );
 
-delete_option( 'lm_db_version' );
+// Delete plugin version option
+delete_option( 'library_manager_db_version' );

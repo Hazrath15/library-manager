@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Library Manager is a custom WordPress plugin that provides an admin dashboard for managing books using a custom database table, secure REST API endpoints, and a React single-page application. Developed for the Junior WordPress Plugin Developer Assignment (Dec 2025).
+The Library Manager provides an admin dashboard for managing books library using secure REST API endpoints, and a React single-page application. 
 
 == Description ==
 

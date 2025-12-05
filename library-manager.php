@@ -7,7 +7,6 @@
  * Author:      Hazrath Ali
  * Author URI:  https://github.com/Hazrath15
  * Text Domain: library-manager
- * Domain Path: /languages
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
