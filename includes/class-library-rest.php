@@ -86,13 +86,18 @@ if( !class_exists( 'LM_Library_Rest_API' ) ) {
             $per_page = max( 1, absint( $request->get_param('per_page') ) );
             $offset   = ( $page - 1 ) * $per_page;
 
-
+            $search = sanitize_text_field( $request->get_param( 'search' ) );
             $status = sanitize_text_field( $request->get_param( 'status' ) );
             $author = sanitize_text_field( $request->get_param( 'author' ) );
             $year   = absint( $request->get_param( 'year' ) );
 
             $where  = "WHERE 1=1";
             $params = [];
+
+            if ( ! empty( $search ) ) { 
+                $where .= " AND title LIKE %s";
+                $params[] = '%' . $wpdb->esc_like( $search ) . '%';
+            }
 
             if ( ! empty( $status ) ) {
                 $where .= " AND status = %s";

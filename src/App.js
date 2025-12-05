@@ -126,7 +126,7 @@ const App = () => {
                     <input
                         type="text"
                         name="author"
-                        placeholder="Filter by author..."
+                        placeholder="Search by author..."
                         value={filters.author}
                         onChange={handleFilterChange}
                     />
@@ -134,7 +134,7 @@ const App = () => {
                     <input
                         type="number"
                         name="year"
-                        placeholder="Filter by year..."
+                        placeholder="Search by year..."
                         value={filters.year}
                         onChange={handleFilterChange}
                     />
