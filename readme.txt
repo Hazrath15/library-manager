@@ -69,6 +69,124 @@ With columns:
 * `created_at`
 * `updated_at`
 
+=== REST API Documentation ===
+
+All endpoints are available under: `/wp-json/library-manager/v1/`
+
+=== Get All Books ===
+
+Method: GET  
+Endpoint: `/wp-json/library-manager/v1/books`
+
+Response example:
+
+[
+  {
+    "id": 1,
+    "title": "Book Title",
+    "author": "Author Name",
+    "description": "Book description",
+    "publication_year": 2025,
+    "status": "available",
+    "created_at": "2025-12-05 10:00:00",
+    "updated_at": "2025-12-05 10:00:00"
+  }
+]
+
+---
+
+=== Get Single Book ===
+
+Method: GET  
+Endpoint: `/wp-json/library-manager/v1/books/{id}`  
+
+Parameters:
+
+* id (required): ID of the book
+
+Response example:
+
+{
+  "id": 1,
+  "title": "Book Title",
+  "author": "Author Name",
+  "description": "Book description",
+  "publication_year": 2025,
+  "status": "available",
+  "created_at": "2025-12-05 10:00:00",
+  "updated_at": "2025-12-05 10:00:00"
+}
+
+---
+
+=== Create Book ===
+
+Method: POST  
+Endpoint: `/wp-json/library-manager/v1/books`  
+
+Request Body (JSON):
+
+{
+  "title": "New Book",
+  "author": "Author Name",
+  "description": "Book description",
+  "publication_year": 2025,
+  "status": "available"
+}
+
+Response example:
+
+{
+  "success": true,
+  "id": 2
+}
+
+---
+
+=== Update Book ===
+
+Method: PUT  
+Endpoint: `/wp-json/library-manager/v1/books/{id}`  
+
+Parameters:
+
+* id (required): ID of the book
+
+Request Body (JSON):
+
+{
+  "title": "Updated Book Title",
+  "author": "Updated Author",
+  "description": "Updated description",
+  "publication_year": 2025,
+  "status": "checked_out"
+}
+
+Response example:
+
+{
+  "success": true
+}
+
+---
+
+=== Delete Book ===
+
+Method: DELETE  
+Endpoint: `/wp-json/library-manager/v1/books/{id}`  
+
+Parameters:
+
+* id (required): ID of the book
+
+Response example:
+
+{
+  "success": true
+}
+
+**Note:** All write operations (POST, PUT, DELETE) require a valid WordPress nonce for authentication.
+
 === Uninstall Behavior ===
 
 When the plugin is deleted:
